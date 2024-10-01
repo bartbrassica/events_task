@@ -12,6 +12,7 @@ class Config:
     # JWT
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'secret')
     JWT_ACCESS_TOKEN_EXPIRES = 3600
+    JWT_REFRESH_TOKEN_EXPIRES = 86400
 
     # Database
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
