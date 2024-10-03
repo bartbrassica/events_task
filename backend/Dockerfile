@@ -14,4 +14,6 @@ COPY . /backend
 
 EXPOSE 5000
 
-CMD ["bash", "-c", "flask db upgrade && flask run --host=0.0.0.0 --port=5000"]
+RUN chmod u+x ./entrypoint.sh
+ENTRYPOINT ["./entrypoint.sh"]
+

@@ -21,7 +21,7 @@ def validate_request(schema):
             except ValidationError as err:
                 return jsonify({"errors": err.messages}), 400
 
-            return fn(*args, validated_data=validated_data, **kwargs)
+            return fn(*args, param=validated_data, **kwargs)
 
         return wrapper
     return decorator
