@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { clearAuthData } from '../../auth';
 
 const API_URL = 'http://localhost:5000/auth';
 const REFRESH_URL = `${API_URL}/token/refresh`;
@@ -27,7 +26,16 @@ export const login = async (username, password) => {
 
     return response.data;
   } catch (error) {
-    throw error;
+    if (error.response) {
+      console.error('Error response:', error.response.data);
+      throw new Error(error.response.data.message || 'An error occurred');
+    } else if (error.request) {
+      console.error('No response:', error.request);
+      throw new Error('No response from server');
+    } else {
+      console.error('Error message:', error.message);
+      throw new Error('Error in request setup');
+    }
   }
 };
 
@@ -39,24 +47,21 @@ export const register = async (registerForm) => {
 
     return response.data;
   } catch (error) {
+    console.error('Registration failed:', error);
     throw error;
   }
 };
 
-export const logout = async (dispatch) => {
-    try {
-      await axiosInstance.post('/logout');
-  
-      localStorage.removeItem('access_token');
-  
-      dispatch(clearAuthData());
-  
-      window.location.href = '/login';
-    } catch (error) {
-      console.error('Logout failed:', error);
-      throw error;
-    }
-  };
+export const logout = async () => {
+  try {
+    await axiosInstance.post('/logout');
+    localStorage.removeItem('access_token');
+    window.location.href = '/login';
+  } catch (error) {
+    console.error('Logout failed:', error);
+    throw error;
+  }
+};
 
 export const refreshAccessToken = async () => {
   try {
@@ -93,11 +98,13 @@ axiosInstance.interceptors.request.use(
   }
 );
 
+const TOKEN_REFRESH_THRESHOLD = 60;
+
 const isTokenExpired = (token) => {
   const payload = JSON.parse(atob(token.split('.')[1]));
   const currentTime = Date.now() / 1000;
 
-  return payload.exp < currentTime;
+  return payload.exp < currentTime + TOKEN_REFRESH_THRESHOLD;
 };
 
 export default axiosInstance;

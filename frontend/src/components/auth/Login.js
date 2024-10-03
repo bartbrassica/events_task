@@ -2,13 +2,19 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { setAuthData } from '../../auth';
 import { login } from './api';
-import LogoutButton from './LogoutButton';
-import { TextField, Button, Container, Typography, Box, Link } from '@mui/material';
+import Modal from './Modal';
+import { TextField, Button, Container, Typography, Box, Link, IconButton, InputAdornment } from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import Lock from '@mui/icons-material/Lock';
 import { useNavigate } from 'react-router-dom';
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState({ title: '', description: '', status: 'error' });
   const dispatch = useDispatch();
   const navigate = useNavigate();
   
@@ -28,7 +34,21 @@ function Login() {
       console.log('Login successful:', data);
     } catch (error) {
       console.error('Login error:', error);
+      setModalContent({
+        title: 'Login Failed',
+        description: error.message || 'An error occurred during login. Please try again.',
+        status: 'error',
+      });
+      setModalOpen(true);
     }
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
+
+  const handleClickShowPassword = () => {
+    setShowPassword((prevShowPassword) => !prevShowPassword);
   };
 
   return (
@@ -38,9 +58,6 @@ function Login() {
         onSubmit={handleLogin} 
         sx={{ mt: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}
       >
-        <Typography variant="h4" gutterBottom>
-          Login
-        </Typography>
         <TextField
           label="Username"
           variant="outlined"
@@ -49,16 +66,45 @@ function Login() {
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           required
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <AccountCircle />
+                </InputAdornment>
+              ),
+            },
+          }}
         />
         <TextField
           label="Password"
           variant="outlined"
-          type="password"
+          type={showPassword ? 'text' : 'password'}
           fullWidth
           margin="normal"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Lock />
+                </InputAdornment>
+              ),
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            },
+          }}
         />
         <Button 
           variant="contained" 
@@ -80,8 +126,15 @@ function Login() {
             Register here
           </Link>
         </Typography>
-        <LogoutButton></LogoutButton>
       </Box>
+
+      <Modal
+        open={modalOpen}
+        status={modalContent.status}
+        title={modalContent.title}
+        description={modalContent.description}
+        onClose={handleCloseModal}
+      />
     </Container>
   );
 }
