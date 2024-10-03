@@ -16,7 +16,7 @@ class Event(db.Model, CreateModifyMixin):
     location = Column(Unicode(255), nullable=False)
 
     # Relationships
-    participants = relationship('EventParticipants', back_populates='event', cascade="all, delete-orphan")
+    participants = relationship('EventParticipant', back_populates='event', cascade="all, delete-orphan")
 
 
 class Participant(db.Model):
@@ -29,7 +29,7 @@ class Participant(db.Model):
     is_vegetarian = Column(Boolean, nullable=False, default=False)
 
     # Relationships
-    events = relationship('EventParticipants', back_populates='participant', cascade="all, delete-orphan")
+    events = relationship('EventParticipant', back_populates='participant', cascade="all, delete-orphan")
 
 
 class EventParticipant(db.Model, CreateModifyMixin):

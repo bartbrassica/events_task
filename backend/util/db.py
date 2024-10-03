@@ -1,6 +1,6 @@
 import contextlib
 from datetime import datetime
-from sqlalchemy import Column, Integer, DateTime
+from sqlalchemy import Column, Integer, DateTime, Sequence
 from sqlalchemy.ext.declarative import declared_attr
 
 from backend.extensions import db
@@ -13,7 +13,7 @@ def PkColumn(seq_name: str):
     Args:
         seq_name (str): The name of the sequence to be used for generating unique values for the column.
     """
-    return db.Column(db.Integer, db.Sequence(seq_name), primary_key=True)
+    return db.Column(Integer, Sequence(seq_name, start=1, increment=1), primary_key=True)
 
 
 @contextlib.contextmanager
