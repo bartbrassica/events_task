@@ -14,7 +14,7 @@ db.init_app(app)
 ma.init_app(app)
 jwt.init_app(app)
 migrate = Migrate(app, db)
-CORS(app)
+CORS(app, supports_credentials=True, origins="http://localhost:3000", allow_headers=["Authorization", "Content-Type"])
 
 app.register_blueprint(auth_bp, url_prefix='/auth')
 
