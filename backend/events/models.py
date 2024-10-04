@@ -17,6 +17,7 @@ class Event(db.Model, CreateModifyMixin):
 
     # Relationships
     participants = relationship('EventParticipant', back_populates='event', cascade="all, delete-orphan")
+    meals = relationship('MealsOnEvent', back_populates='event', cascade="all, delete-orphan")
 
 
 class Participant(db.Model):
@@ -30,6 +31,7 @@ class Participant(db.Model):
 
     # Relationships
     events = relationship('EventParticipant', back_populates='participant', cascade="all, delete-orphan")
+    meals_on_event = relationship('ParticipantMealsOnEvent', back_populates='participant', cascade="all, delete-orphan")
 
 
 class EventParticipant(db.Model, CreateModifyMixin):
@@ -44,3 +46,30 @@ class EventParticipant(db.Model, CreateModifyMixin):
     # Relationships
     event = relationship('Event', back_populates='participants')
     participant = relationship('Participant', back_populates='events')
+
+
+class MealsOnEvent(db.Model, CreateModifyMixin):
+    __tablename__ = 'meals_on_event'
+
+    id = PkColumn('meals_on_event_id_seq')
+    name = Column(Unicode(100), nullable=False)
+    meal_type = Column(Unicode(50), nullable=False)
+    is_vegetarian = Column(Boolean, nullable=False, default=False)
+    event_id = Column(Integer, ForeignKey('events.id'), nullable=False)
+
+    # Relationships
+    event = relationship('Event', back_populates='meals')
+    participant_meals = relationship('ParticipantMealsOnEvent', back_populates='meal', cascade="all, delete-orphan")
+
+
+class ParticipantMealsOnEvent(db.Model, CreateModifyMixin):
+    __tablename__ = 'participant_meals_on_event'
+
+    id = PkColumn('participant_meals_on_event_id_seq')
+    meal_id = Column(Integer, ForeignKey('meals_on_event.id'), nullable=False)
+    participant_id = Column(Integer, ForeignKey('participants.id'), nullable=False)
+    is_special_request = Column(Boolean, nullable=True)
+
+    # Relationships
+    meal = relationship('MealsOnEvent', back_populates='participant_meals')
+    participant = relationship('Participant', back_populates='meals_on_event')
