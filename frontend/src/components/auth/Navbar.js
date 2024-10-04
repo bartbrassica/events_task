@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Drawer, List, ListItem, ListItemText, ListItemIcon, Toolbar, CssBaseline, IconButton, Box } from '@mui/material';
-import LogoutButton from './LogoutButton'
+import { Link } from 'react-router-dom';
+import LogoutButton from './LogoutButton';
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import HomeIcon from '@mui/icons-material/Home';
 import MenuIcon from '@mui/icons-material/Menu';
+import PersonIcon from '@mui/icons-material/Person';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
@@ -30,11 +31,17 @@ function NavBar() {
       <div>
         <Toolbar />
         <List>
-          <ListItem button component="a" href="/dashboard">
+          <ListItem button component={Link} to="/dashboard">
             <ListItemIcon>
               <DashboardIcon />
             </ListItemIcon>
             <ListItemText primary="Dashboard" />
+          </ListItem>
+          <ListItem button component={Link} to="/participants">
+            <ListItemIcon>
+              <PersonIcon />
+            </ListItemIcon>
+            <ListItemText primary="Participants" />
           </ListItem>
         </List>
       </div>

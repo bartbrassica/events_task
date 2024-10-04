@@ -1,7 +1,10 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/auth';
-const REFRESH_URL = `${API_URL}/token/refresh`;
+const API_URL = 'http://localhost:5000/';
+const REFRESH_URL = `${API_URL}auth/token/refresh`;
+
+let isRefreshing = false;
+let failedQueue = [];
 
 const axiosInstance = axios.create({
   baseURL: API_URL,
@@ -12,9 +15,21 @@ const setAccessToken = (token) => {
   axiosInstance.defaults.headers['Authorization'] = `Bearer ${token}`;
 };
 
+const processQueue = (error, token = null) => {
+  failedQueue.forEach(promise => {
+    if (error) {
+      promise.reject(error);
+    } else {
+      promise.resolve(token);
+    }
+  });
+
+  failedQueue = [];
+};
+
 export const login = async (username, password) => {
   try {
-    const response = await axios.post(`${API_URL}/login`, { username, password }, {
+    const response = await axios.post(`${API_URL}auth/login`, { username, password }, {
       headers: { 'Content-Type': 'application/json' },
     });
 
@@ -41,20 +56,28 @@ export const login = async (username, password) => {
 
 export const register = async (registerForm) => {
   try {
-    const response = await axios.post(`${API_URL}/register`, registerForm, {
+    const response = await axios.post(`${API_URL}auth/register`, registerForm, {
       headers: { 'Content-Type': 'application/json' },
     });
 
     return response.data;
   } catch (error) {
-    console.error('Registration failed:', error);
-    throw error;
+    if (error.response) {
+      console.error('Registration error response:', error.response.data);
+      throw new Error(error.response.data.message || 'Registration failed.');
+    } else if (error.request) {
+      console.error('No response during registration:', error.request);
+      throw new Error('No response from server during registration.');
+    } else {
+      console.error('Error message during registration:', error.message);
+      throw new Error('Error in registration request setup.');
+    }
   }
 };
 
 export const logout = async () => {
   try {
-    await axiosInstance.post('/logout');
+    await axiosInstance.post('auth/logout');
     localStorage.removeItem('access_token');
     window.location.href = '/login';
   } catch (error) {
@@ -63,7 +86,7 @@ export const logout = async () => {
   }
 };
 
-export const refreshAccessToken = async () => {
+const refreshAccessToken = async () => {
   try {
     const response = await axios.post(REFRESH_URL, {}, { withCredentials: true });
 
@@ -81,16 +104,184 @@ export const refreshAccessToken = async () => {
   }
 };
 
+export const fetchEvents = async () => {
+  try {
+    const response = await axiosInstance.get('events/events');
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data.message || 'Failed to fetch events.');
+  }
+};
+
+export const fetchEvent = async (eventId) => {
+  try {
+    const response = await axiosInstance.get(`events/events/${eventId}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data.message || 'Failed to fetch event.');
+  }
+};
+
+export const createEvent = async (eventData) => {
+  try {
+    const response = await axiosInstance.post('events/events', eventData);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data.message || 'Failed to create event.');
+  }
+};
+
+export const updateEvent = async (eventId, eventData) => {
+  try {
+    const response = await axiosInstance.patch(`events/events/${eventId}`, eventData);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data.message || 'Failed to update event.');
+  }
+};
+
+export const deleteEvent = async (eventId) => {
+  try {
+    const response = await axiosInstance.delete(`events/events/${eventId}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data.message || 'Failed to delete event.');
+  }
+};
+
+export const fetchParticipants = async () => {
+  try {
+    const response = await axiosInstance.get('events/participants');
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data.message || 'Failed to fetch participants.');
+  }
+};
+
+export const fetchParticipant = async (participantId) => {
+  try {
+    const response = await axiosInstance.get(`events/participants/${participantId}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data.message || 'Failed to fetch participant.');
+  }
+};
+
+export const createParticipant = async (participantData) => {
+  try {
+    const response = await axiosInstance.post('events/participants', participantData);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data.message || 'Failed to create participant.');
+  }
+};
+
+export const updateParticipant = async (participantId, participantData) => {
+  try {
+    const response = await axiosInstance.patch(`events/participants/${participantId}`, participantData);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data.message || 'Failed to update participant.');
+  }
+};
+
+export const deleteParticipant = async (participantId) => {
+  try {
+    const response = await axiosInstance.delete(`events/participants/${participantId}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data.message || 'Failed to delete participant.');
+  }
+};
+
+export const fetchEventParticipants = async (eventId) => {
+  try {
+    const response = await axiosInstance.get(`events/events/${eventId}/participants`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data.message || 'Failed to fetch event participants.');
+  }
+};
+
+export const addParticipantToEvent = async (eventId, participantData) => {
+  try {
+    const response = await axiosInstance.post(`events/events/${eventId}/participants`, participantData);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data.message || 'Failed to add participant to event.');
+  }
+};
+
+export const fetchEventParticipant = async (eventId, eventParticipantId) => {
+  try {
+    const response = await axiosInstance.get(`events/events/${eventId}/participants/${eventParticipantId}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data.message || 'Failed to fetch event participant.');
+  }
+};
+
+export const updateEventParticipant = async (eventId, eventParticipantId, updateData) => {
+  try {
+    const response = await axiosInstance.patch(`events/events/${eventId}/participants/${eventParticipantId}`, updateData);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data.message || 'Failed to update event participant.');
+  }
+};
+
+export const removeParticipantFromEvent = async (eventId, eventParticipantId) => {
+  try {
+    const response = await axiosInstance.delete(`events/events/${eventId}/participants/${eventParticipantId}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data.message || 'Failed to remove participant from event.');
+  }
+};
+
+export const fetchUpcomingEventsForParticipant = async (participantId) => {
+  try {
+    const response = await axiosInstance.get(`events/participants/${participantId}/upcoming-events`);
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch upcoming events:', error);
+    throw new Error('Failed to fetch upcoming events.');
+  }
+};
+
 axiosInstance.interceptors.request.use(
   async (config) => {
     let accessToken = localStorage.getItem('access_token');
 
     if (!accessToken || isTokenExpired(accessToken)) {
-      accessToken = await refreshAccessToken();
+      if (!isRefreshing) {
+        isRefreshing = true;
+
+        try {
+          accessToken = await refreshAccessToken();
+          processQueue(null, accessToken);
+        } catch (error) {
+          processQueue(error, null);
+          throw error;
+        } finally {
+          isRefreshing = false;
+        }
+      }
+
+      return new Promise((resolve, reject) => {
+        failedQueue.push({
+          resolve: (token) => {
+            config.headers['Authorization'] = `Bearer ${token}`;
+            resolve(config);
+          },
+          reject: (error) => {
+            reject(error);
+          },
+        });
+      });
     }
 
     config.headers['Authorization'] = `Bearer ${accessToken}`;
-
     return config;
   },
   (error) => {
@@ -101,10 +292,17 @@ axiosInstance.interceptors.request.use(
 const TOKEN_REFRESH_THRESHOLD = 60;
 
 const isTokenExpired = (token) => {
-  const payload = JSON.parse(atob(token.split('.')[1]));
-  const currentTime = Date.now() / 1000;
+  if (!token) return true;
+  
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const currentTime = Date.now() / 1000;
 
-  return payload.exp < currentTime + TOKEN_REFRESH_THRESHOLD;
+    return payload.exp < currentTime + TOKEN_REFRESH_THRESHOLD;
+  } catch (error) {
+    console.error('Invalid token format:', error);
+    return true;
+  }
 };
 
 export default axiosInstance;
