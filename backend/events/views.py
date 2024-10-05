@@ -48,13 +48,13 @@ class EventsView(MethodView):
     @jwt_required()
     def get(self):
         current_time = datetime.now(timezone.utc)
-        logger.debug(f"Fetching events after current time: {current_time}")
+        logger.debug("Fetching events after current time: %s", current_time)
 
         events = Event.query.filter(
             Event.date >= current_time.strftime('%Y-%m-%d')
         ).order_by(Event.date).all()
 
-        logger.debug(f"Fetched events: {events}")
+        logger.debug("Fetched events: %s", events)
 
         event_schema = EventSerializationSchema(many=True)
         events_data = event_schema.dump(events)
@@ -63,12 +63,12 @@ class EventsView(MethodView):
     @jwt_required()
     @validate_request(EventSchema())
     def post(self, param):
-        logger.debug(f"Creating new event with params: {param}")
+        logger.debug("Creating new event with params: %s", param)
         with commit_section():
             new_event = Event(**param)
             db.session.add(new_event)
 
-        logger.info(f"Event created successfully: {new_event}")
+        logger.info("Event created successfully: %s", new_event)
 
         return jsonify({
             "message": "Event created successfully",
@@ -79,9 +79,9 @@ class EventsView(MethodView):
 class EventView(MethodView):
     @jwt_required()
     def get(self, event_id):
-        logger.debug(f"Fetching event: {event_id}")
+        logger.debug("Fetching event: %s", event_id)
         event = Event.query.get_or_404(event_id)
-        logger.info(f"Event fetched successfully: {event}")
+        logger.info("Event fetched successfully: %s", event)
         event_schema = EventSerializationSchema()
         event_data = event_schema.dump(event)
         return jsonify(event_data), 200
@@ -89,7 +89,7 @@ class EventView(MethodView):
     @jwt_required()
     @validate_request(EventSchema())
     def patch(self, event_id, param):
-        logger.debug(f"Updating event {event_id} with params: {param}")
+        logger.debug("Updating event %s with params: %s", event_id, param)
         event = Event.query.get_or_404(event_id)
 
         for key, value in param.items():
@@ -98,7 +98,7 @@ class EventView(MethodView):
         with commit_section():
             db.session.add(event)
 
-        logger.info(f"Event updated successfully: {event}")
+        logger.info("Event updated successfully: %s", event)
 
         return jsonify({
             "message": "Event updated successfully",
@@ -107,13 +107,13 @@ class EventView(MethodView):
 
     @jwt_required()
     def delete(self, event_id):
-        logger.debug(f"Deleting event {event_id}")
+        logger.debug("Deleting event %s", event_id)
         event = Event.query.get_or_404(event_id)
 
         with commit_section():
             db.session.delete(event)
 
-        logger.info(f"Event deleted successfully: {event_id}")
+        logger.info("Event deleted successfully: %s", event_id)
 
         return jsonify({"message": "Event deleted successfully"}), 204
 
@@ -133,7 +133,7 @@ class ParticipantsView(MethodView):
         with commit_section():
             new_participant = Participant(**param)
             db.session.add(new_participant)
-        logger.info(f"Participant created successfully {new_participant}")
+        logger.info("Participant created successfully %s", new_participant)
         return jsonify({
             "message": "Participant created successfully",
             "participant": ParticipantSerializationSchema().dump(new_participant)
@@ -151,7 +151,7 @@ class ParticipantView(MethodView):
     @jwt_required()
     @validate_request(ParticipantSchema())
     def patch(self, participant_id, param):
-        logger.debug(f"Updating participant {participant_id}")
+        logger.debug("Updating participant %s", participant_id)
         participant = Participant.query.get_or_404(participant_id)
 
         for key, value in param.items():
@@ -159,7 +159,7 @@ class ParticipantView(MethodView):
 
         with commit_section():
             db.session.add(participant)
-        logger.info(f"Participant {participant_id} updated successfully")
+        logger.info("Participant %s updated successfully", participant_id)
         return jsonify({
             "message": "Participant updated successfully",
             "participant": ParticipantSerializationSchema().dump(participant)
@@ -167,13 +167,13 @@ class ParticipantView(MethodView):
 
     @jwt_required()
     def delete(self, participant_id):
-        logger.debug(f"Deleting participant {participant_id}")
+        logger.debug("Deleting participant %s", participant_id)
         participant = Participant.query.get_or_404(participant_id)
 
         with commit_section():
             db.session.delete(participant)
 
-        logger.info(f"Participant deleted successfully: {participant_id}")
+        logger.info("Participant deleted successfully: %s", participant_id)
 
         return jsonify({"message": "Participant deleted successfully"}), 204
 
@@ -196,13 +196,13 @@ class EventParticipantsView(MethodView):
     @jwt_required()
     @validate_request(EventParticipantsSchema())
     def post(self, event_id, param):
-        logger.debug(f"Creating new event participant in event {event_id}")
+        logger.debug("Creating new event participant in event %s", event_id)
         param['event_id'] = event_id
 
         with commit_section():
             new_event_participant = EventParticipant(**param)
             db.session.add(new_event_participant)
-        logger.info(f"Event participant created successfully: {new_event_participant}")
+        logger.info("Event participant created successfully: %s", new_event_participant)
         return jsonify({
             "message": "Event participant created successfully",
             "event_participant": EventParticipantSerializationSchema().dump(new_event_participant)
@@ -222,7 +222,7 @@ class EventParticipantView(MethodView):
     @jwt_required()
     @validate_request(EventParticipantsSchema())
     def patch(self, event_id, event_participant_id, param):
-        logger.debug(f"Updating event participant {event_participant_id}")
+        logger.debug("Updating event participant %s", event_participant_id)
         event_participant = EventParticipant.query.filter_by(
             event_id=event_id, id=event_participant_id
         ).first_or_404()
@@ -232,7 +232,7 @@ class EventParticipantView(MethodView):
 
         with commit_section():
             db.session.add(event_participant)
-        logger.info(f"Event participant updated successfully {event_participant}")
+        logger.info("Event participant updated successfully %s", event_participant)
         return jsonify({
             "message": "Event participant updated successfully",
             "event_participant": EventParticipantSerializationSchema().dump(event_participant)
@@ -240,7 +240,7 @@ class EventParticipantView(MethodView):
 
     @jwt_required()
     def delete(self, event_id, event_participant_id):
-        logger.debug(f"Deleting participant {event_participant_id} from event {event_id}")
+        logger.debug("Deleting participant %s from event %s", event_participant_id, event_id)
         event_participant = EventParticipant.query.filter_by(
             event_id=event_id, id=event_participant_id
         ).first_or_404()
@@ -248,7 +248,7 @@ class EventParticipantView(MethodView):
         with commit_section():
             db.session.delete(event_participant)
 
-        logger.info(f"Participant in event deleted successfully: {event_participant_id}")
+        logger.info("Participant in event deleted successfully: %s", event_participant_id)
 
         return jsonify({"message": "Event participant deleted successfully"}), 204
 
@@ -290,13 +290,13 @@ class MealsOnEventView(MethodView):
     @jwt_required()
     @validate_request(MealsOnEventSchema())
     def post(self, event_id, param):
-        logger.debug(f"Creating new meal on event {event_id}")
+        logger.debug("Creating new meal on event %s", event_id)
         param['event_id'] = event_id
 
         with commit_section():
             new_meal = MealsOnEvent(**param)
             db.session.add(new_meal)
-        logger.info(f"Meal {new_meal} added successfully to event {event_id}")
+        logger.info("Meal %s added successfully to event %s", new_meal, event_id)
         return jsonify({
             "message": "Meal added to event successfully",
             "meal": MealsOnEventSchema().dump(new_meal)
@@ -317,7 +317,7 @@ class MealOnEventDetailView(MethodView):
     @jwt_required()
     @validate_request(MealsOnEventSchema())
     def patch(self, event_id, meal_id, param):
-        logger.debug(f"Updating meal {meal_id}")
+        logger.debug("Updating meal %s", meal_id)
         meal_on_event = MealsOnEvent.query.filter_by(
             event_id=event_id, id=meal_id
         ).first_or_404()
@@ -327,7 +327,7 @@ class MealOnEventDetailView(MethodView):
 
         with commit_section():
             db.session.add(meal_on_event)
-        logger.info(f"Meal updated successfully {meal_on_event}")
+        logger.info("Meal updated successfully %s", meal_on_event)
         return jsonify({
             "message": "Meal updated successfully",
             "meal": MealsOnEventSchema().dump(meal_on_event)
@@ -335,7 +335,7 @@ class MealOnEventDetailView(MethodView):
 
     @jwt_required()
     def delete(self, event_id, meal_id):
-        logger.debug(f"Deleting meal {meal_id} from event {event_id}")
+        logger.debug("Deleting meal %s from event %s", meal_id, event_id)
         meal_on_event = MealsOnEvent.query.filter_by(
             event_id=event_id, id=meal_id
         ).first_or_404()
@@ -343,7 +343,7 @@ class MealOnEventDetailView(MethodView):
         with commit_section():
             db.session.delete(meal_on_event)
 
-        logger.info(f"Meal {meal_id} in event {event_id} deleted successfully")
+        logger.info("Meal %s in event %s deleted successfully", meal_id, event_id)
 
         return jsonify({"message": "Meal deleted successfully"}), 204
 
@@ -368,7 +368,7 @@ class ParticipantMealsOnEventView(MethodView):
     @validate_request(ParticipantListOfMealsOnEventSchema())
     @jwt_required()
     def post(self, event_id, participant_id, param):
-        logger.debug(f"Adding meals to event participant {participant_id}, {event_id}")
+        logger.debug("Adding meals to event participant %s, %s", participant_id, event_id)
         param['participant_id'] = participant_id
         meals_data = param.get('meals', [])
 
@@ -419,7 +419,7 @@ class ParticipantMealOnEventDetailView(MethodView):
 
     @jwt_required()
     def delete(self, event_id, participant_meal_id):
-        logger.debug(f"Deleting participant meal {participant_meal_id} in event {event_id}")
+        logger.debug("Deleting participant meal %s in event %s", participant_meal_id, event_id)
         participant_meal = ParticipantMealsOnEvent.query.filter_by(
             id=participant_meal_id
         ).first_or_404()
@@ -427,7 +427,7 @@ class ParticipantMealOnEventDetailView(MethodView):
         with commit_section():
             db.session.delete(participant_meal)
 
-        logger.info(f"Participant meal {participant_meal_id} in event {event_id} deleted successfully")
+        logger.info("Participant meal %s in event %s deleted successfully", participant_meal_id, event_id)
 
         return jsonify({"message": "Participant meal deleted successfully"}), 204
 
