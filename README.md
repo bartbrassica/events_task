@@ -26,6 +26,10 @@ The **Event Management System** is a web application designed to manage events, 
 ## Getting Started
 
 ### 1. Clone the repository
+```bash
+git clone git@github.com:bartosseey/events_task.git
+cd event-register
+```
 
 ### 2. Install Docker and compose plugin
 ```bash
