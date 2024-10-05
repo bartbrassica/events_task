@@ -67,6 +67,7 @@ class ParticipantMealsOnEvent(db.Model, CreateModifyMixin):
 
     id = PkColumn('participant_meals_on_event_id_seq')
     meal_id = Column(Integer, ForeignKey('meals_on_event.id'), nullable=False)
+    day = Column(Integer, nullable=False)
     participant_id = Column(Integer, ForeignKey('participants.id'), nullable=False)
     is_special_request = Column(Boolean, nullable=True)
 
