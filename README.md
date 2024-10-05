@@ -57,3 +57,6 @@ Stoping containers:
 
 Restarting containers:
 ./restart_containers.sh
+
+
+### 5. Go to localhost:3000
