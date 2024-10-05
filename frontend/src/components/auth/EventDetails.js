@@ -74,7 +74,7 @@ function EventDetails() {
       ...data, event_id: eventId, participant_id: selectedParticipant.id
     }
     try {
-      await updateEventParticipant(eventId, selectedParticipant.id, data);
+      await updateEventParticipant(eventId, selectedParticipant.id, updatedData);
   
       setEditModalOpen(false);
       refreshParticipants();
