@@ -70,6 +70,9 @@ function EventDetails() {
   };
 
   const handleEditSubmit = async (data) => {
+    const updatedData = {
+      ...data, event_id: eventId, participant_id: selectedParticipant.id
+    }
     try {
       await updateEventParticipant(eventId, selectedParticipant.id, data);
   
