@@ -249,6 +249,96 @@ export const fetchUpcomingEventsForParticipant = async (participantId) => {
   }
 };
 
+export const fetchMealsForEvent = async (eventId) => {
+  try {
+    const response = await axiosInstance.get(`events/events/${eventId}/meals`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data.message || 'Failed to fetch meals for the event.');
+  }
+};
+
+export const fetchMealDetails = async (eventId, mealId) => {
+  try {
+    const response = await axiosInstance.get(`events/events/${eventId}/meals/${mealId}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data.message || 'Failed to fetch meal details.');
+  }
+};
+
+export const addMealToEvent = async (eventId, mealData) => {
+  try {
+    const response = await axiosInstance.post(`events/events/${eventId}/meals`, mealData);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data.message || 'Failed to add meal to event.');
+  }
+};
+
+export const updateMealOnEvent = async (eventId, mealId, mealData) => {
+  try {
+    const response = await axiosInstance.patch(`events/events/${eventId}/meals/${mealId}`, mealData);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data.message || 'Failed to update meal on event.');
+  }
+};
+
+export const deleteMealFromEvent = async (eventId, mealId) => {
+  try {
+    const response = await axiosInstance.delete(`events/events/${eventId}/meals/${mealId}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data.message || 'Failed to delete meal from event.');
+  }
+};
+
+export const fetchParticipantMealsOnEvent = async (eventId, participantId) => {
+  try {
+    const response = await axiosInstance.get(`events/events/${eventId}/participants/${participantId}/meals`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data.message || 'Failed to fetch participant meals for the event.');
+  }
+};
+
+export const addParticipantMealsToEvent = async (eventId, participantId, mealsData) => {
+  try {
+    const response = await axiosInstance.post(`events/events/${eventId}/participants/${participantId}/meals`, mealsData);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data.message || 'Failed to add participant meal to event.');
+  }
+};
+
+export const fetchParticipantMealDetails = async (eventId, participantMealId) => {
+  try {
+    const response = await axiosInstance.get(`events/events/${eventId}/participants/meals/${participantMealId}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data.message || 'Failed to fetch participant meal details.');
+  }
+};
+
+export const updateParticipantMealOnEvent = async (eventId, participantMealId, mealData) => {
+  try {
+    const response = await axiosInstance.patch(`events/events/${eventId}/participants/meals/${participantMealId}`, mealData);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data.message || 'Failed to update participant meal on event.');
+  }
+};
+
+export const deleteParticipantMealOnEvent = async (eventId, participantMealId) => {
+  try {
+    const response = await axiosInstance.delete(`events/events/${eventId}/participants/meals/${participantMealId}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data.message || 'Failed to delete participant meal on event.');
+  }
+};
+
 axiosInstance.interceptors.request.use(
   async (config) => {
     let accessToken = localStorage.getItem('access_token');

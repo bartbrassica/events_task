@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Modal, Box, Button, TextField, FormControlLabel, Checkbox } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Modal, Box, Button, TextField, FormControlLabel, Checkbox, Select, MenuItem } from '@mui/material';
 
 function ModalWithForm({ open, onClose, onSubmit, fields }) {
   const [formValues, setFormValues] = useState({});
 
   useEffect(() => {
     const initialValues = fields.reduce((acc, field) => {
-      acc[field.name] = field.defaultValue || '';
+      acc[field.name] = field.type === 'checkbox' ? !!field.defaultValue : field.defaultValue || '';
       return acc;
     }, {});
     setFormValues(initialValues);
@@ -17,6 +17,13 @@ function ModalWithForm({ open, onClose, onSubmit, fields }) {
     setFormValues((prevValues) => ({
       ...prevValues,
       [name]: type === 'checkbox' ? checked : value,
+    }));
+  };
+
+  const handleSelectChange = (name, value) => {
+    setFormValues((prevValues) => ({
+      ...prevValues,
+      [name]: value,
     }));
   };
 
@@ -35,13 +42,29 @@ function ModalWithForm({ open, onClose, onSubmit, fields }) {
                 <FormControlLabel
                   control={
                     <Checkbox
-                      checked={formValues[field.name] || false}
+                      checked={!!formValues[field.name]}
                       onChange={handleChange}
                       name={field.name}
                     />
                   }
                   label={field.label}
                 />
+              ) : field.type === 'select' ? (
+                <div>
+                  <label>{field.label}</label>
+                  <Select
+                    fullWidth
+                    value={formValues[field.name]}
+                    onChange={(e) => handleSelectChange(field.name, e.target.value)}
+                    name={field.name}
+                  >
+                    {field.options.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </div>
               ) : (
                 <TextField
                   label={field.label}

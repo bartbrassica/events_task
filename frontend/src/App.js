@@ -8,6 +8,7 @@ import PrivateRoute from './components/auth/PrivateRoute';
 import NavBar from './components/auth/Navbar';
 import TopBar from './components/auth/Topbar';
 import Participants from './components/auth/Participants';
+import EventMeals from './components/auth/EventMeals';
 
 function App() {
   return (
@@ -32,6 +33,15 @@ function App() {
               <PrivateRoute>
                 <NavBar />
                 <EventDetails />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/events/:eventId/meals"
+            element={
+              <PrivateRoute>
+                <NavBar />
+                <EventMeals />
               </PrivateRoute>
             }
           />

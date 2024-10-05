@@ -31,7 +31,6 @@ function Login() {
       }));
 
       navigate('/dashboard');
-      console.log('Login successful:', data);
     } catch (error) {
       console.error('Login error:', error);
       setModalContent({

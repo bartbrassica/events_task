@@ -36,8 +36,8 @@ function Participants() {
         await createParticipant(data);
       }
 
-      const data = await fetchParticipants();
-      setParticipants(data);
+      const updatedParticipants = await fetchParticipants();
+      setParticipants(updatedParticipants);
       setModalOpen(false);
       setSelectedParticipant(null);
     } catch (error) {

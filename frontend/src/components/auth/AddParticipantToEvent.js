@@ -70,30 +70,37 @@ function AddParticipantToEvent({ eventId, eventDuration, onParticipantAdded }) {
     <Container maxWidth="sm">
       <Typography variant="h5" sx={{ my: 2 }}>Add Participant to Event</Typography>
       
-      <Grid2 container spacing={2} alignItems="center">
-        <Grid2 item xs={8} lg={8}>
-          <Typography>Select Participant:</Typography>
-          <Select
-            fullWidth
-            value={selectedParticipantId}
-            onChange={(e) => setSelectedParticipantId(e.target.value)}
-            displayEmpty
-          >
-            <MenuItem value="" disabled>Select a participant</MenuItem>
-            {participants.map((participant) => (
-              <MenuItem key={participant.id} value={participant.id}>
-                {participant.first_name} {participant.last_name} ({participant.email})
-              </MenuItem>
-            ))}
-          </Select>
-        </Grid2>
-        <Grid2 item xs={4} lg={4} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <Button variant="outlined" onClick={() => setAddParticipantModalOpen(true)} sx={{ mb: 1 }}>
-            Add New
-          </Button>
+      <Grid2 container spacing={2} direction="column" alignItems="stretch">
+        <Grid2 item xs={12} container spacing={2} alignItems="center">
+          <Grid2 item xs={9}>
+            <Typography>Select Participant:</Typography>
+            <Select
+              fullWidth
+              value={selectedParticipantId}
+              onChange={(e) => setSelectedParticipantId(e.target.value)}
+              displayEmpty
+            >
+              <MenuItem value="" disabled>Select a participant</MenuItem>
+              {participants.map((participant) => (
+                <MenuItem key={participant.id} value={participant.id}>
+                  {participant.first_name} {participant.last_name} ({participant.email})
+                </MenuItem>
+              ))}
+            </Select>
+          </Grid2>
+
+          <Grid2 item xs={3} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <Button
+              variant="outlined"
+              onClick={() => setAddParticipantModalOpen(true)}
+              sx={{ mb: 1, height: '100%' }}
+            >
+              Add New Participant
+            </Button>
+          </Grid2>
         </Grid2>
 
-        <Grid2 item xs={12} md={6}>
+        <Grid2 item xs={12}>
           <TextField
             label="Days in Event"
             type="number"
@@ -105,7 +112,7 @@ function AddParticipantToEvent({ eventId, eventDuration, onParticipantAdded }) {
           />
         </Grid2>
 
-        <Grid2 item xs={12} md={6}>
+        <Grid2 item xs={12}>
           <FormControlLabel
             control={
               <Checkbox
@@ -117,12 +124,13 @@ function AddParticipantToEvent({ eventId, eventDuration, onParticipantAdded }) {
           />
         </Grid2>
 
-        <Grid2 item xs={12} md={6}>
+        <Grid2 item xs={12}>
           <Button 
             variant="contained" 
             color="primary" 
             onClick={handleAddParticipant}
             disabled={!selectedParticipantId || !!error}
+            fullWidth
           >
             Add Participant to Event
           </Button>
