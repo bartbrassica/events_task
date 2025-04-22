@@ -41,13 +41,18 @@ sudo apt update
 sudo apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 ```
 
-### 3. Adjust .env files
+### 3. Create database
+```bash
+docker exec -it postgres_database psql -U postgres -c "CREATE DATABASE event_inz;"
+```
+
+### 4. Adjust .env files
 
 In root folder create .env file, there is .env.example to copy required keys.
 Do the same in backend folder.
 
 
-### 4. Run scripts
+### 5. Run scripts
 
 If you want to start app simply use:
 ./start_containers.sh
@@ -59,4 +64,4 @@ Restarting containers:
 ./restart_containers.sh
 
 
-### 5. Go to localhost:3000
+### 6. Go to localhost:3000
